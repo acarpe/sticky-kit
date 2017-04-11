@@ -109,7 +109,6 @@ $.fn.stick_in_parent = (opts={}) ->
           tick()
 
       recalc()
-      return if height == parent_height
 
       last_pos = undefined
       offset = offset_top
@@ -265,5 +264,3 @@ $.fn.stick_in_parent = (opts={}) ->
 
     ) $ elm
   @
-
-

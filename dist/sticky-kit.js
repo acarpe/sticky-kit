@@ -110,9 +110,6 @@
         }
       };
       recalc();
-      if (height === parent_height) {
-        return;
-      }
       last_pos = void 0;
       offset = offset_top;
       recalc_counter = recalc_every;
