@@ -5,7 +5,10 @@
 $ = window.jQuery
 
 win = $ window
-doc = $ document
+
+isFunction = (obj) ->
+  typeof obj == 'function' || false
+
 
 $.fn.stick_in_parent = (opts={}) ->
   {
@@ -18,14 +21,19 @@ $.fn.stick_in_parent = (opts={}) ->
     bottoming: enable_bottoming
   } = opts
 
-  win_height = win.height()
-  doc_height = doc.height()
-
   offset_top ?= 0
+  offset_top_fn = undefined
+  if isFunction(offset_top)
+    offset_top_fn = offset_top
+  else
+    offset_top_fn = ->
+      offset_top
+
   parent_selector ?= undefined
   inner_scrolling ?= true
   sticky_class ?= "is_stuck"
 
+  doc = $ document
   enable_bottoming = true unless enable_bottoming?
 
   # we need this because jquery's version (along with css()) rounds everything
@@ -47,7 +55,7 @@ $.fn.stick_in_parent = (opts={}) ->
       return if elm.data "sticky_kit"
       elm.data "sticky_kit", true
 
-      last_scroll_height = doc_height
+      last_scroll_height = doc.height()
 
       parent = elm.parent()
       parent = parent.closest(parent_selector) if parent_selector?
@@ -64,9 +72,7 @@ $.fn.stick_in_parent = (opts={}) ->
 
       recalc = ->
         return if detached
-        win_height = win.height();
-        doc_height = doc.height();
-        last_scroll_height = doc_height
+        last_scroll_height = doc.height()
 
         border_top = parseInt parent.css("border-top-width"), 10
         padding_top = parseInt parent.css("padding-top"), 10
@@ -92,7 +98,7 @@ $.fn.stick_in_parent = (opts={}) ->
 
           restore = true
 
-        top = elm.offset().top - (parseInt(elm.css("margin-top"), 10) or 0) - offset_top
+        top = elm.offset().top - (parseInt(elm.css("margin-top"), 10) or 0) - offset_top_fn()
 
         height = elm.outerHeight true
 
@@ -111,11 +117,12 @@ $.fn.stick_in_parent = (opts={}) ->
       recalc()
 
       last_pos = undefined
-      offset = offset_top
+      offset = offset_top_fn()
 
       recalc_counter = recalc_every
 
       tick = ->
+        offset = offset_top_fn()
         return if detached
         recalced = false
 
@@ -126,7 +133,7 @@ $.fn.stick_in_parent = (opts={}) ->
             recalc()
             recalced = true
 
-        if !recalced && doc_height != last_scroll_height
+        if !recalced && doc.height() != last_scroll_height
           recalc()
           recalced = true
 
@@ -151,7 +158,7 @@ $.fn.stick_in_parent = (opts={}) ->
           # unfixing
           if scroll < top
             fixed = false
-            offset = offset_top
+            offset = offset_top_fn()
 
             unless manual_spacer?
               if el_float == "left" || el_float == "right"
@@ -168,11 +175,13 @@ $.fn.stick_in_parent = (opts={}) ->
 
           # updated offset
           if inner_scrolling
-            if height + offset_top > win_height # bigger than viewport
+            win_height = win.height()
+            offset_top_calc_value = offset_top_fn()
+            if height + offset_top_calc_value > win_height # bigger than viewport
               unless bottomed
                 offset -= delta
                 offset = Math.max win_height - height, offset
-                offset = Math.min offset_top, offset
+                offset = Math.min offset_top_calc_value, offset
 
                 if fixed
                   elm.css {
