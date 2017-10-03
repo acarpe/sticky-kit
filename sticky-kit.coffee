@@ -117,7 +117,6 @@ $.fn.stick_in_parent = (opts={}) ->
       recalc()
 
       last_pos = undefined
-      offset = offset_top_fn()
 
       recalc_counter = recalc_every
 

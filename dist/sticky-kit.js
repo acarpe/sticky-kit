@@ -65,7 +65,7 @@
     };
     ref = this;
     fn = function(elm, padding_bottom, parent_top, parent_height, top, height, el_float, detached) {
-      var bottomed, detach, fixed, last_pos, last_scroll_height, offset, parent, recalc, recalc_and_tick, recalc_counter, spacer, tick;
+      var bottomed, detach, fixed, last_pos, last_scroll_height, parent, recalc, recalc_and_tick, recalc_counter, spacer, tick;
       if (elm.data("sticky_kit")) {
         return;
       }
@@ -128,10 +128,9 @@
       };
       recalc();
       last_pos = void 0;
-      offset = offset_top_fn();
       recalc_counter = recalc_every;
       tick = function() {
-        var css, delta, offset_top_calc_value, recalced, scroll, will_bottom, win_height;
+        var css, delta, offset, offset_top_calc_value, recalced, scroll, will_bottom, win_height;
         offset = offset_top_fn();
         if (detached) {
           return;
